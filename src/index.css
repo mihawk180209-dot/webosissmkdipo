@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  width: auto;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+@keyframes imageReveal {
+  0% {
+    opacity: 0;
+    transform: scale(1.05); /* Mulai agak nge-zoom */
+    filter: blur(5px); /* Sedikit blur di awal */
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1); /* Kembali ke ukuran normal */
+    filter: blur(0);
+  }
+}
+
+/* Teks muncul dari bawah ke atas */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px); /* Mulai 30px di bawah posisi asli */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sticky button muncul dari luar layar bawah */
+@keyframes slideUpSticky {
+  from {
+    transform: translateY(100%); /* Sembunyi di bawah layar */
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 2. Utility Classes untuk dipakai di React */
+
+/* Base class biar elemen hidden dulu sebelum animasi mulai */
+.prepare-anim {
+  opacity: 0;
+  /* 'forwards' artinya setelah animasi selesai, stay di kondisi terakhir (gak balik hidden) */
+  animation-fill-mode: forwards;
+}
+
+.anim-image {
+  animation: imageReveal 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.anim-text {
+  animation: fadeUp 0.8s ease-out;
+}
+
+/* Class khusus buat sticky footer */
+.anim-sticky-footer {
+  /* Delay 1.5 detik, biar konten kebaca dulu baru tombol muncul */
+  animation: slideUpSticky 0.8s ease-out 1.5s forwards;
+  transform: translateY(100%); /* Posisi awal ngumpet */
+}
+
+/* 3. Delays (PENTING BIAR GAK MUNCUL BARENGAN) */
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-400 {
+  animation-delay: 400ms;
+}
+.delay-600 {
+  animation-delay: 600ms;
+}
+.delay-800 {
+  animation-delay: 800ms;
+}
+.delay-1000 {
+  animation-delay: 1000ms;
+}
