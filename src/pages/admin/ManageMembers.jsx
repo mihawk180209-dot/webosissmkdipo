@@ -42,12 +42,52 @@ export default function ManageMembers() {
     setLoading(false);
   };
 
-  // --- LOGIC HAPUS FILE (Dipakai saat Hapus Data & Ganti Foto) ---
+  // --- HELPER: CONVERT KE WEBP ---
+  const convertImageToWebP = (file) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        // Convert ke WebP, Quality 0.8 (80%)
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const newFile = new File(
+                [blob],
+                file.name.replace(/\.[^/.]+$/, "") + ".webp",
+                {
+                  type: "image/webp",
+                  lastModified: Date.now(),
+                },
+              );
+              resolve(newFile);
+            } else {
+              reject(new Error("Gagal konversi gambar"));
+            }
+          },
+          "image/webp",
+          0.8,
+        );
+      };
+      img.onerror = (error) => reject(error);
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  // --- LOGIC HAPUS FILE ---
   const deleteFileFromStorage = async (imageUrl) => {
     if (!imageUrl) return;
-    const filePath = imageUrl.split("/osis-gallery/")[1];
-    if (filePath)
-      await supabase.storage.from("osis-gallery").remove([filePath]);
+    // Cek apakah url valid dan mengandung path bucket kita
+    if (imageUrl.includes("/osis-gallery/")) {
+      const filePath = imageUrl.split("/osis-gallery/")[1];
+      if (filePath)
+        await supabase.storage.from("osis-gallery").remove([filePath]);
+    }
   };
 
   const confirmDelete = (member) =>
@@ -69,30 +109,47 @@ export default function ManageMembers() {
     setDeleteModal({ show: false, id: null, imageUrl: null, name: "" });
   };
 
+  // --- LOGIC UPLOAD BARU (AUTO WEBP) ---
   const handleUpload = async () => {
-    if (!file) return null; // Return null jika tidak ada file baru
-    const fileExt = file.name.split(".").pop();
-    const fileName = `members/${Date.now()}.${fileExt}`;
-    setUploading(true);
-    const { error } = await supabase.storage
-      .from("osis-gallery")
-      .upload(fileName, file);
-    if (error) {
+    if (!file) return null;
+
+    try {
+      setUploading(true);
+
+      // 1. Convert gambar user ke WebP
+      const webpFile = await convertImageToWebP(file);
+
+      // 2. Set nama file dengan ekstensi .webp
+      const fileName = `members/${Date.now()}.webp`;
+
+      // 3. Upload ke Supabase
+      const { error } = await supabase.storage
+        .from("osis-gallery")
+        .upload(fileName, webpFile, {
+          contentType: "image/webp", // Penting biar browser tau ini webp
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      const { data } = supabase.storage
+        .from("osis-gallery")
+        .getPublicUrl(fileName);
+
+      setUploading(false);
+      return data.publicUrl;
+    } catch (error) {
       alert("Gagal upload: " + error.message);
       setUploading(false);
       return null;
     }
-    const { data } = supabase.storage
-      .from("osis-gallery")
-      .getPublicUrl(fileName);
-    setUploading(false);
-    return data.publicUrl;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let finalImageUrl = form.image_url; // Default pakai URL lama
+    let finalImageUrl = form.image_url;
 
     // Jika ada file baru yang diupload
     if (file) {
@@ -100,7 +157,7 @@ export default function ManageMembers() {
       if (isEditing && form.image_url) {
         await deleteFileFromStorage(form.image_url);
       }
-      // 2. Upload foto baru
+      // 2. Upload foto baru (sudah auto convert di handleUpload)
       const newUrl = await handleUpload();
       if (newUrl) finalImageUrl = newUrl;
     }
@@ -126,6 +183,7 @@ export default function ManageMembers() {
     setIsEditing(true);
     setShowForm(true);
   };
+
   const resetForm = () => {
     setForm({ id: null, name: "", position: "", image_url: "" });
     setFile(null);
@@ -154,7 +212,7 @@ export default function ManageMembers() {
         </button>
       </div>
 
-      {/* FORM INPUT (FULL WIDTH & MODERN) */}
+      {/* FORM INPUT */}
       <AnimatePresence>
         {showForm && (
           <motion.div
@@ -211,11 +269,12 @@ export default function ManageMembers() {
                 {/* Upload Area */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Foto Profil
+                    Foto Profil (Otomatis convert ke WebP)
                   </label>
                   <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-orange-50 transition-colors cursor-pointer relative group">
                     <input
                       type="file"
+                      accept="image/*" // Membatasi input hanya gambar
                       onChange={(e) => setFile(e.target.files[0])}
                       className="absolute inset-0 opacity-0 cursor-pointer z-10"
                     />
@@ -228,7 +287,7 @@ export default function ManageMembers() {
                         {file ? file.name : "Klik untuk upload foto baru"}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
-                        Format: JPG, PNG (Max 2MB)
+                        JPG, PNG akan otomatis diubah ke WebP
                       </p>
                     </div>
                   </div>
@@ -247,7 +306,7 @@ export default function ManageMembers() {
                     {uploading && (
                       <Loader2 size={20} className="animate-spin" />
                     )}
-                    {uploading ? "Mengupload..." : "Simpan Data"}
+                    {uploading ? "Mengupload & Convert..." : "Simpan Data"}
                   </button>
                 </div>
               </form>

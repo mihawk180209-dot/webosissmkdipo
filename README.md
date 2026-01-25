@@ -9,6 +9,8 @@
 
 Website ini dibangun untuk mendigitalisasi informasi OSIS SMK Diponegoro 1 Jakarta. Menggunakan teknologi **Single Page Application (SPA)** yang cepat, responsif, dan dinamis. Dilengkapi dengan **Admin Panel** yang aman untuk pengelolaan konten secara _real-time_ tanpa perlu menyentuh kode program.
 
+🔗 **Repository:** [webosissmkdipo](https://github.com/mihawk180209-dot/webosissmkdipo)
+
 ---
 
 ## 🔥 Fitur Unggulan (Full Features)
@@ -17,16 +19,18 @@ Website ini dibagi menjadi dua bagian utama: **Halaman Publik** (untuk siswa/umu
 
 ### 🌍 1. Halaman Publik (User Interface)
 
-Halaman ini dapat diakses oleh siapa saja.
+Halaman ini dapat diakses oleh siapa saja dengan tampilan modern.
 
-- **Beranda Modern:** Hero section dengan animasi, sekilas info statistik, dan navigasi intuitif.
-- **Visi & Misi Dinamis:** Data Visi dan Misi diambil langsung dari database (bisa diedit admin), bukan teks mati.
-- **Galeri Pengurus:** Menampilkan daftar anggota OSIS lengkap dengan foto, nama, dan jabatan dalam tampilan grid yang rapi.
+- **Beranda Interaktif:** Hero section dengan animasi halus, statistik organisasi, dan navigasi responsif.
+- **Visi & Misi Dinamis:** Data Visi dan Misi diambil langsung dari database (bisa diedit via Admin), bukan teks statis.
+- **Struktur Organisasi Cerdas:**
+  - Menampilkan galeri foto pengurus dengan desain grid rapi.
+  - **Auto-Filter Guru:** Sistem otomatis memisahkan "Dewan Pembina" (Guru) di bagian atas dan "Badan Pengurus Harian" (Siswa) di bawahnya berdasarkan jabatan.
+  - **Visual Distinction:** Tampilan foto guru berbeda (eksklusif) dengan foto siswa.
 - **Program Kerja:**
   - Daftar artikel kegiatan terbaru.
   - Halaman **Detail Program** dengan foto banner besar, deskripsi, dan tanggal posting.
-  - Fitur tombol "Kembali ke Beranda" yang responsif.
-- **Kontak & Footer:** Integrasi langsung ke sosial media (Instagram, TikTok, YouTube) dan informasi alamat sekolah.
+- **Kontak & Footer:** Integrasi langsung ke sosial media sekolah dan peta lokasi.
 
 ### 🛡️ 2. Panel Admin (Content Management System)
 
@@ -48,17 +52,17 @@ Halaman khusus pengurus yang diproteksi sistem keamanan.
 
 ## 🛠️ Teknologi (Tech Stack)
 
-Project ini dibuat dengan standar industri terkini:
+Project ini dibuat dengan standar industri terkini agar mudah dikembangkan:
 
-- **Frontend Framework:** [React.js](https://react.dev/) (Library UI terpopuler)
+- **Frontend Framework:** [React.js](https://react.dev/)
 - **Build Tool:** [Vite](https://vitejs.dev/) (Super cepat & ringan)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) (Utility-first CSS framework)
 - **Backend as a Service:** [Supabase](https://supabase.com/)
-  - **PostgreSQL:** Database relasional yang kuat.
-  - **Auth:** Sistem login aman.
-  - **Storage:** Penyimpanan file (foto & banner).
-- **Icons:** [Lucide React](https://lucide.dev/) (Ikon vektor ringan)
-- **Animation:** [Framer Motion](https://www.framer.com/motion/) (Animasi transisi halus)
+  - **PostgreSQL:** Database utama.
+  - **Auth:** Sistem autentikasi admin.
+  - **Storage:** Penyimpanan file (foto profil & banner kegiatan).
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Animation:** [Framer Motion](https://www.framer.com/motion/)
 
 ---
 
@@ -69,8 +73,8 @@ Ikuti langkah ini untuk menjalankan project di laptop/komputer Anda:
 ### 1. Clone Repository
 
 ```bash
-git clone [(https://github.com/username-kamu/nama-repo.git)
-cd nama-repo
+git clone [https://github.com/mihawk180209-dot/webosissmkdipo.git](https://github.com/mihawk180209-dot/webosissmkdipo.git)
+cd webosissmkdipo
 ```
 
 ````
@@ -84,15 +88,13 @@ npm install
 
 ```
 
-_(Tips: Gunakan `npm uninstall` untuk menghapus library sampah yang tidak terpakai)_
-
 ### 3. Konfigurasi Environment Variable
 
-Buat file bernama `.env` di folder paling luar (sejajar dengan `package.json`), lalu isi:
+Buat file bernama `.env` di folder paling luar (sejajar dengan `package.json`), lalu isi dengan kredensial Supabase Anda:
 
 ```env
-VITE_SUPABASE_URL=[https://proyek-kamu.supabase.co](https://proyek-kamu.supabase.co)
-VITE_SUPABASE_ANON_KEY=eyJh... (Kunci Anon Key Panjang Kamu)
+VITE_SUPABASE_URL=[https://project-id-kamu.supabase.co](https://project-id-kamu.supabase.co)
+VITE_SUPABASE_ANON_KEY=eyJh... (Kunci Anon Key Panjang)
 
 ```
 
@@ -150,8 +152,8 @@ values ('Visi Default...', 'Misi Default...');
 
 Sistem login telah dimodifikasi agar user hanya perlu memasukkan **Username**.
 
-- **Format Database:** `username
-- **Input Login:** `username` (Sistem otomatis menambahkan domain di belakang layar)
+- **Format Database:** `username@osis.dipo` (Email samaran internal)
+- **Input Login:** `username` (Sistem otomatis menambahkan domain `@osis.dipo` di belakang layar)
 - **Password:** Sesuai yang didaftarkan di Supabase Authentication.
 
 ---
@@ -163,8 +165,8 @@ Dikembangkan dengan dedikasi tinggi oleh:
 **Finn**
 
 - **Role:** Fullstack Developer (React & Supabase)
-- **Instagram:** [@username_kak_fino](https://www.google.com/search?q=https://instagram.com/_finssssss)
-- **GitHub:** [github.com/username-kak_fino](https://www.google.com/search?q=https://github.com/FinoAlyasa)
+- **Instagram:** [@\_finssssss](https://www.google.com/search?q=https://instagram.com/_finssssss)
+- **GitHub:** [FinoAlyasa](https://www.google.com/search?q=https://github.com/FinoAlyasa)
 
 ---
 

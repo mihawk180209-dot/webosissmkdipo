@@ -43,12 +43,52 @@ export default function ManagePrograms() {
     setPrograms(data || []);
   };
 
+  // --- HELPER: CONVERT KE WEBP ---
+  const convertImageToWebP = (file) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        // Convert ke WebP, Quality 0.8
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const newFile = new File(
+                [blob],
+                file.name.replace(/\.[^/.]+$/, "") + ".webp",
+                {
+                  type: "image/webp",
+                  lastModified: Date.now(),
+                },
+              );
+              resolve(newFile);
+            } else {
+              reject(new Error("Gagal konversi gambar"));
+            }
+          },
+          "image/webp",
+          0.8,
+        );
+      };
+      img.onerror = (error) => reject(error);
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   // --- LOGIC HAPUS FILE ---
   const deleteFileFromStorage = async (imageUrl) => {
     if (!imageUrl) return;
-    const filePath = imageUrl.split("/osis-gallery/")[1];
-    if (filePath)
-      await supabase.storage.from("osis-gallery").remove([filePath]);
+    // Cek path bucket
+    if (imageUrl.includes("/osis-gallery/")) {
+      const filePath = imageUrl.split("/osis-gallery/")[1];
+      if (filePath)
+        await supabase.storage.from("osis-gallery").remove([filePath]);
+    }
   };
 
   const confirmDelete = (prog) => {
@@ -68,24 +108,41 @@ export default function ManagePrograms() {
     setDeleteModal({ show: false, id: null, imageUrl: null, title: "" });
   };
 
+  // --- UPLOAD DENGAN AUTO CONVERT WEBP ---
   const handleUpload = async () => {
     if (!file) return null;
-    const fileExt = file.name.split(".").pop();
-    const fileName = `programs/${Date.now()}.${fileExt}`;
-    setUploading(true);
-    const { error } = await supabase.storage
-      .from("osis-gallery")
-      .upload(fileName, file);
-    if (error) {
-      alert("Upload error");
+
+    try {
+      setUploading(true);
+
+      // 1. Convert ke WebP
+      const webpFile = await convertImageToWebP(file);
+
+      // 2. Set nama file .webp
+      const fileName = `programs/${Date.now()}.webp`;
+
+      // 3. Upload
+      const { error } = await supabase.storage
+        .from("osis-gallery")
+        .upload(fileName, webpFile, {
+          contentType: "image/webp",
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      const { data } = supabase.storage
+        .from("osis-gallery")
+        .getPublicUrl(fileName);
+
+      setUploading(false);
+      return data.publicUrl;
+    } catch (error) {
+      alert("Upload error: " + error.message);
       setUploading(false);
       return null;
     }
-    const { data } = supabase.storage
-      .from("osis-gallery")
-      .getPublicUrl(fileName);
-    setUploading(false);
-    return data.publicUrl;
   };
 
   const handleSubmit = async (e) => {
@@ -216,11 +273,12 @@ export default function ManagePrograms() {
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Banner / Logo Program
+                    Banner / Logo Program (Auto WebP)
                   </label>
                   <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:bg-orange-50 relative group transition-colors">
                     <input
                       type="file"
+                      accept="image/*"
                       onChange={(e) => setFile(e.target.files[0])}
                       className="absolute inset-0 opacity-0 cursor-pointer z-10"
                     />
@@ -233,7 +291,7 @@ export default function ManagePrograms() {
                         {file ? file.name : "Klik untuk upload banner"}
                       </span>
                       <span className="text-xs text-gray-400 mt-1">
-                        Format: JPG, PNG
+                        Format JPG/PNG akan otomatis dikonversi ke WebP
                       </span>
                     </div>
                   </div>
@@ -252,7 +310,7 @@ export default function ManagePrograms() {
                     {uploading && (
                       <Loader2 size={20} className="animate-spin" />
                     )}
-                    {uploading ? "Menyimpan..." : "Simpan Program"}
+                    {uploading ? "Mengupload & Convert..." : "Simpan Program"}
                   </button>
                 </div>
               </form>
