@@ -1,52 +1,75 @@
 # 🎓 Website Resmi OSIS SMK Diponegoro 1 Jakarta
 
-Website modern untuk OSIS SMK Diponegoro 1 Jakarta yang berfungsi sebagai pusat informasi, profil anggota, dan dokumentasi program kerja siswa. Website ini dilengkapi dengan **Panel Admin** untuk mengelola konten secara dinamis tanpa perlu menyentuh kodingan.
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E)
 
-🔗 **Live Demo:** [osissmkdipo1jkt.netlify.app]
+> **Platform digital modern untuk aspirasi, informasi, dan kreasi siswa.**
 
----
-
-## ✨ Fitur Unggulan
-
-### 🌍 Halaman Publik (Siswa)
-
-- **Desain Modern & Responsif:** Tampilan optimal di HP, Tablet, dan Desktop.
-- **Beranda:** Banner selamat datang, visi misi, dan sekilas info.
-- **Program Kerja:** Daftar kegiatan OSIS dengan filter dan detail lengkap.
-- **Anggota OSIS:** Profil struktur organisasi pengurus OSIS.
-- **Kontak & Sosmed:** Integrasi link ke Instagram, TikTok, dan YouTube.
-
-### 🛡️ Halaman Admin (Pengurus)
-
-- **Login Aman:** Sistem autentikasi admin.
-- **Dashboard Statistik:** Ringkasan jumlah anggota dan program aktif.
-- **Manajemen Anggota (CRUD):** Tambah, Edit, Hapus data pengurus + Upload Foto.
-- **Manajemen Program (CRUD):** Tulis artikel kegiatan, upload banner, dan hapus program.
-- **Auto-Cleanup:** Foto lama otomatis terhapus dari server saat data diupdate (Hemat penyimpanan).
+Website ini dibangun untuk mendigitalisasi informasi OSIS SMK Diponegoro 1 Jakarta. Menggunakan teknologi **Single Page Application (SPA)** yang cepat, responsif, dan dinamis. Dilengkapi dengan **Admin Panel** yang aman untuk pengelolaan konten secara _real-time_ tanpa perlu menyentuh kode program.
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## 🔥 Fitur Unggulan (Full Features)
 
-Project ini dibangun menggunakan teknologi web terkini agar cepat dan ringan:
+Website ini dibagi menjadi dua bagian utama: **Halaman Publik** (untuk siswa/umum) dan **Panel Admin** (untuk pengurus OSIS).
 
-- **Frontend:** [React.js](https://react.dev/) + [Vite](https://vitejs.dev/) (Super cepat)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/) (Desain rapi & konsisten)
-- **Backend & Database:** [Supabase](https://supabase.com/) (Database real-time & Auth)
-- **Storage:** Supabase Storage (Untuk menyimpan foto profil & banner)
-- **Animasi:** Framer Motion (Transisi halus)
-- **Ikon:** Lucide React
+### 🌍 1. Halaman Publik (User Interface)
+
+Halaman ini dapat diakses oleh siapa saja.
+
+- **Beranda Modern:** Hero section dengan animasi, sekilas info statistik, dan navigasi intuitif.
+- **Visi & Misi Dinamis:** Data Visi dan Misi diambil langsung dari database (bisa diedit admin), bukan teks mati.
+- **Galeri Pengurus:** Menampilkan daftar anggota OSIS lengkap dengan foto, nama, dan jabatan dalam tampilan grid yang rapi.
+- **Program Kerja:**
+  - Daftar artikel kegiatan terbaru.
+  - Halaman **Detail Program** dengan foto banner besar, deskripsi, dan tanggal posting.
+  - Fitur tombol "Kembali ke Beranda" yang responsif.
+- **Kontak & Footer:** Integrasi langsung ke sosial media (Instagram, TikTok, YouTube) dan informasi alamat sekolah.
+
+### 🛡️ 2. Panel Admin (Content Management System)
+
+Halaman khusus pengurus yang diproteksi sistem keamanan.
+
+- **Secure Login:** Sistem login menggunakan trik _Username_ (bukan email panjang) yang terintegrasi dengan Supabase Auth.
+- **Dashboard Overview:** Melihat ringkasan jumlah anggota aktif dan program kerja secara _real-time_.
+- **Manajemen Anggota (CRUD):**
+  - Tambah anggota baru dengan upload foto.
+  - Edit data jabatan/nama.
+  - Hapus anggota (Foto di server otomatis terhapus untuk menghemat penyimpanan).
+- **Manajemen Program Kerja (CRUD):**
+  - Tulis artikel kegiatan dengan Textarea luas.
+  - Upload banner kegiatan.
+  - Hapus program kerja beserta fotonya.
+- **Edit Visi Misi:** Form khusus untuk mengubah teks Visi dan Misi sekolah yang tampil di halaman depan secara instan.
 
 ---
 
-## 🚀 Cara Menjalankan Project (Localhost)
+## 🛠️ Teknologi (Tech Stack)
 
-Ikuti langkah ini jika ingin menjalankan website di laptop kamu:
+Project ini dibuat dengan standar industri terkini:
+
+- **Frontend Framework:** [React.js](https://react.dev/) (Library UI terpopuler)
+- **Build Tool:** [Vite](https://vitejs.dev/) (Super cepat & ringan)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) (Utility-first CSS framework)
+- **Backend as a Service:** [Supabase](https://supabase.com/)
+  - **PostgreSQL:** Database relasional yang kuat.
+  - **Auth:** Sistem login aman.
+  - **Storage:** Penyimpanan file (foto & banner).
+- **Icons:** [Lucide React](https://lucide.dev/) (Ikon vektor ringan)
+- **Animation:** [Framer Motion](https://www.framer.com/motion/) (Animasi transisi halus)
+
+---
+
+## 🚀 Panduan Instalasi (Localhost)
+
+Ikuti langkah ini untuk menjalankan project di laptop/komputer Anda:
 
 ### 1. Clone Repository
 
 ```bash
-git clone [https://github.com/username-kamu/nama-repo.git](https://github.com/username-kamu/nama-repo.git)
+git clone [(https://github.com/username-kamu/nama-repo.git)
 cd nama-repo
 ```
 
@@ -54,72 +77,92 @@ cd nama-repo
 
 ### 2. Install Dependencies
 
-Pastikan Node.js sudah terinstall, lalu jalankan:
+Pastikan **Node.js** sudah terinstall.
 
 ```bash
 npm install
 
 ```
 
+_(Tips: Gunakan `npm uninstall` untuk menghapus library sampah yang tidak terpakai)_
+
 ### 3. Konfigurasi Environment Variable
 
-Buat file baru bernama `.env` di folder paling luar, lalu isi dengan kunci API Supabase kamu:
+Buat file bernama `.env` di folder paling luar (sejajar dengan `package.json`), lalu isi:
 
 ```env
-VITE_SUPABASE_URL=[https://your-project-id.supabase.co](https://your-project-id.supabase.co)
-VITE_SUPABASE_ANON_KEY=eyJh... (Kunci Anon Key Kamu)
+VITE_SUPABASE_URL=[https://proyek-kamu.supabase.co](https://proyek-kamu.supabase.co)
+VITE_SUPABASE_ANON_KEY=eyJh... (Kunci Anon Key Panjang Kamu)
 
 ```
 
-### 4. Jalankan Server
+### 4. Jalankan Server Development
 
 ```bash
 npm run dev
 
 ```
 
-Buka browser dan akses `http://localhost:5173`.
+Buka browser dan akses: `http://localhost:5173`
 
 ---
 
-## 🗄️ Struktur Database (Supabase)
+## 🗄️ Skema Database (Supabase SQL)
 
-Jika ingin membuat ulang database, berikut adalah tabel yang digunakan:
+Jika Anda ingin membuat ulang database dari nol, jalankan perintah SQL ini di **Supabase SQL Editor**:
 
-**Tabel: `members**`
+```sql
+-- 1. Tabel Anggota OSIS
+create table members (
+  id bigint primary key generated always as identity,
+  name text not null,
+  position text not null,
+  image_url text,
+  created_at timestamp with time zone default now()
+);
 
-- `id` (int8, primary key)
-- `name` (text)
-- `position` (text)
-- `image_url` (text)
-- `created_at` (timestamp)
+-- 2. Tabel Program Kerja
+create table programs (
+  id bigint primary key generated always as identity,
+  title text not null,
+  description text,
+  content text,
+  image_url text,
+  created_at timestamp with time zone default now()
+);
 
-**Tabel: `programs**`
+-- 3. Tabel Profil Sekolah (Visi Misi)
+create table school_profile (
+  id bigint primary key generated always as identity,
+  vision text,
+  mission text
+);
 
-- `id` (int8, primary key)
-- `title` (text)
-- `description` (text)
-- `content` (text)
-- `image_url` (text)
-- `created_at` (timestamp)
+-- Insert Data Awal Visi Misi (Wajib ada 1 baris)
+insert into school_profile (vision, mission)
+values ('Visi Default...', 'Misi Default...');
+
+```
 
 ---
 
 ## 🔐 Catatan Login Admin
 
-Untuk login ke dashboard admin, sistem menggunakan kombinasi username yang dikonversi menjadi email internal.
+Sistem login telah dimodifikasi agar user hanya perlu memasukkan **Username**.
 
-- **Username:** (Sesuai yang didaftarkan di Supabase Auth)
-- **Password:** (Password akun tersebut)
-
-_(Sistem akan otomatis mengubah username menjadi `username@osis.dipo` saat login)._
+- **Format Database:** `username
+- **Input Login:** `username` (Sistem otomatis menambahkan domain di belakang layar)
+- **Password:** Sesuai yang didaftarkan di Supabase Authentication.
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Author & Maintainer
 
-Dibangun oleh **Fino**.
+Dikembangkan dengan dedikasi tinggi oleh:
 
+**Finn**
+
+- **Role:** Fullstack Developer (React & Supabase)
 - **Instagram:** [@username_kak_fino](https://www.google.com/search?q=https://instagram.com/_finssssss)
 - **GitHub:** [github.com/username-kak_fino](https://www.google.com/search?q=https://github.com/FinoAlyasa)
 

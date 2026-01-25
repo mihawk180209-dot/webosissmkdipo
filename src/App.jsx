@@ -15,6 +15,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import DashboardHome from "./pages/admin/DashboardHome";
 import ManageMembers from "./pages/admin/ManageMembers";
 import ManagePrograms from "./pages/admin/ManagePrograms";
+import ManageVisiMisi from "./pages/admin/ManageVisiMisi";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="dashboard" element={<DashboardHome />} />
             <Route path="members" element={<ManageMembers />} />
             <Route path="programs" element={<ManagePrograms />} />
+            <Route path="visi-misi" element={<ManageVisiMisi />} />
           </Route>
         </Route>
       </Routes>

@@ -52,7 +52,7 @@ export default function Footer() {
             </div>
             <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
               Wadah aspirasi dan kreativitas siswa untuk mewujudkan generasi
-              yang berkarakter, kreatif, dan inovatif.
+              yang Berkarakter, Berkarya, Berteknologi.
             </p>
 
             {/* SOSMED ICONS */}
@@ -146,15 +146,13 @@ export default function Footer() {
           <div className="flex items-center gap-1">
             <span>
               Built by
-              {/* === LINK INSTAGRAM KAK FINO === */}
-              {/* Ganti URL di bawah ini dengan link IG asli Kak Fino */}
               <a
                 href="https://instagram.com/_finssssss"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white font-semibold hover:text-orange-500 hover:underline ml-1 transition-colors"
               >
-                Fino
+                Finn
               </a>
             </span>
           </div>

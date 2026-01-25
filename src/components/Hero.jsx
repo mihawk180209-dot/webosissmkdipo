@@ -65,7 +65,7 @@ export default function Hero() {
           Wadah aspirasi siswa untuk mewujudkan generasi pemimpin yang
           <span className="text-white font-semibold"> Berkarakter</span>,
           <span className="text-white font-semibold"> Berkarya</span>, dan
-          <span className="text-white font-semibold"> Berteknelogi</span>.
+          <span className="text-white font-semibold"> Berteknologi</span>.
         </motion.p>
 
         {/* Tombol Action */}

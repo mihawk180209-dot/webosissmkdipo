@@ -8,6 +8,7 @@ import {
   Menu,
   X,
   LayoutDashboard,
+  Target,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -37,6 +38,11 @@ export default function AdminLayout() {
       name: "Program Kerja",
       path: "/admin/programs",
       icon: <FileText size={20} />,
+    },
+    {
+      name: "Edit Visi Misi",
+      path: "/admin/visi-misi",
+      icon: <Target size={20} />,
     },
   ];
 
