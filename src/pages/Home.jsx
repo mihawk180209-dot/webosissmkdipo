@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import MembersGallery from "../components/MembersGallery";
-import ProgramKerja from "../components/programKerja";
+import ProgramKerja from "../components/ProgramKerja";
 import Footer from "../components/Footer";
 import { motion } from "framer-motion";
 import { Target, CheckCircle, Users, Sparkles, Loader2 } from "lucide-react";
