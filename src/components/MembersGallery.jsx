@@ -1,17 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { Link } from "react-router-dom";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Registrasi plugin
+gsap.registerPlugin(ScrollTrigger);
 
 export default function MembersGallery({ isPreview = false, title = "" }) {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Ref untuk scoping GSAP agar tidak "bocor" ke komponen lain
+  const containerRef = useRef(null);
 
   useEffect(() => {
     fetchMembers();
   }, []);
 
   const fetchMembers = async () => {
-    // Ambil data anggota, urutkan berdasarkan ID
     let query = supabase
       .from("members")
       .select("*")
@@ -44,13 +51,145 @@ export default function MembersGallery({ isPreview = false, title = "" }) {
     students = students.slice(0, 4);
   }
 
-  // Judul Utama Section
   const displayTitle = title || (isPreview ? "Struktur Organisasi" : "");
-
-  // LOGIC JUDUL SUB-SECTION SISWA (Sesuai Request)
   const studentSubtitle = isPreview
     ? "Badan Pengurus Harian"
     : "Pengurus Siswa";
+
+  // --- GSAP ANIMATION SETUP ---
+  useLayoutEffect(() => {
+    if (loading) return;
+
+    let ctx = gsap.context(() => {
+      // PERBAIKAN: Cek dulu apakah .anim-header ada sebelum di-animasi
+      // Kita gunakan containerRef.current.querySelector untuk mencari di dalam scope
+      if (containerRef.current.querySelector(".anim-header")) {
+        gsap.from(".anim-header", {
+          y: -30,
+          opacity: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".anim-header",
+            start: "top 85%",
+          },
+        });
+      }
+
+      // 2. Animasi Divider & Section Guru
+      if (teachers.length > 0) {
+        // Cek juga untuk divider teacher
+        if (containerRef.current.querySelector(".anim-divider-teacher")) {
+          gsap.from(".anim-divider-teacher", {
+            scaleX: 0,
+            opacity: 0,
+            duration: 1,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".teacher-section", start: "top 80%" },
+          });
+        }
+
+        gsap.from(".teacher-card", {
+          y: 50,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: "back.out(1.7)",
+          scrollTrigger: { trigger: ".teacher-section", start: "top 75%" },
+        });
+      }
+
+      // 3. Animasi Divider & Section Siswa
+      // Cek divider student
+      if (containerRef.current.querySelector(".anim-divider-student")) {
+        gsap.from(".anim-divider-student", {
+          scaleX: 0,
+          opacity: 0,
+          duration: 1,
+          delay: 0.2,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".student-grid", start: "top 85%" },
+        });
+      }
+
+      gsap.from(".student-card", {
+        y: 60,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "power2.out",
+        scrollTrigger: { trigger: ".student-grid", start: "top 80%" },
+      });
+
+      // 4. Animasi Tombol Lihat Semua
+      if (isPreview) {
+        gsap.from(".anim-btn", {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.5,
+          ease: "back.out(1.7)",
+          scrollTrigger: { trigger: ".anim-btn", start: "top 90%" },
+        });
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [loading, teachers, students, isPreview]);
+  // --- INTERACTION ANIMATIONS (HOVER) ---
+  // Fungsi ini menggantikan CSS hover classes
+  const onHoverTeacher = (e, enter) => {
+    const card = e.currentTarget;
+    const img = card.querySelector("img");
+
+    gsap.to(card, {
+      scale: enter ? 1.05 : 1,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+    // Efek scale gambar guru
+    gsap.to(img, {
+      scale: enter ? 1.1 : 1,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+  };
+
+  const onHoverStudent = (e, enter) => {
+    const card = e.currentTarget;
+    const img = card.querySelector("img");
+    const overlay = card.querySelector(".overlay-gradient");
+
+    gsap.to(card, {
+      y: enter ? -8 : 0, // Menggantikan -translate-y-1
+      boxShadow: enter
+        ? "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+        : "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+      duration: 0.3,
+      ease: "power2.out",
+    });
+
+    gsap.to(img, {
+      scale: enter ? 1.1 : 1, // Menggantikan group-hover:scale-110
+      duration: 0.5,
+      ease: "power1.out",
+    });
+
+    // Sedikit menggelapkan overlay saat hover
+    gsap.to(overlay, {
+      opacity: enter ? 0.8 : 0.6,
+      duration: 0.3,
+    });
+  };
+
+  const onHoverBtn = (e, enter) => {
+    gsap.to(e.currentTarget, {
+      backgroundColor: enter ? "#f97316" : "#ffffff", // orange-500 : white
+      color: enter ? "#ffffff" : "#ea580c", // white : orange-600
+      scale: enter ? 1.05 : 1,
+      boxShadow: enter ? "0 4px 6px -1px rgba(249, 115, 22, 0.4)" : "none",
+      duration: 0.3,
+    });
+  };
 
   if (loading)
     return (
@@ -58,11 +197,15 @@ export default function MembersGallery({ isPreview = false, title = "" }) {
     );
 
   return (
-    <section id="anggota" className={isPreview ? "py-20 bg-orange-50" : "py-0"}>
+    <section
+      id="anggota"
+      ref={containerRef}
+      className={isPreview ? "py-20 bg-orange-50" : "py-0"}
+    >
       <div className="container mx-auto px-4">
         {/* JUDUL UTAMA BESAR */}
         {displayTitle && (
-          <div className="text-center mb-16">
+          <div className="anim-header text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
               {displayTitle}
             </h2>
@@ -72,9 +215,9 @@ export default function MembersGallery({ isPreview = false, title = "" }) {
 
         {/* === BAGIAN 1: DEWAN GURU / PEMBINA === */}
         {teachers.length > 0 && (
-          <div className="mb-16">
+          <div className="teacher-section mb-16">
             {/* JUDUL PEMBATAS PEMBINA */}
-            <div className="flex items-center gap-4 mb-10">
+            <div className="anim-divider-teacher flex items-center gap-4 mb-10">
               <div className="h-px bg-gray-300 flex-1"></div>
               <h3 className="text-center text-xl font-bold text-gray-500 uppercase tracking-[0.2em]">
                 Dewan Pembina
@@ -84,17 +227,20 @@ export default function MembersGallery({ isPreview = false, title = "" }) {
 
             <div className="flex flex-wrap justify-center gap-10 md:gap-16">
               {teachers.map((guru) => (
-                <div key={guru.id} className="text-center group w-64">
-                  {/* FOTO GURU (FULL COLOR) */}
-                  <div className="w-40 h-40 md:w-52 md:h-52 mx-auto mb-6 rounded-full p-2 bg-white border border-gray-100 shadow-xl group-hover:scale-105 transition-transform duration-500 relative">
+                <div
+                  key={guru.id}
+                  className="teacher-card text-center w-64 cursor-pointer" // Removed 'group' and css transitions
+                  onMouseEnter={(e) => onHoverTeacher(e, true)}
+                  onMouseLeave={(e) => onHoverTeacher(e, false)}
+                >
+                  {/* FOTO GURU */}
+                  {/* Removed transition classes, added overflow-hidden for image zoom containment */}
+                  <div className="w-40 h-40 md:w-52 md:h-52 mx-auto mb-6 rounded-full p-2 bg-white border border-gray-100 shadow-xl relative overflow-hidden">
                     <img
                       src={guru.image_url}
                       alt={guru.name}
-                      className="w-full h-full object-cover rounded-full transition-all duration-500"
+                      className="w-full h-full object-cover rounded-full" // Removed CSS transition/transform classes
                     />
-                    <div className="absolute bottom-2 right-4 bg-orange-600 text-white text-xs px-3 py-1 rounded-full shadow-md font-bold">
-                      Guru
-                    </div>
                   </div>
 
                   <h4 className="text-xl md:text-2xl font-bold text-gray-800 mb-1">
@@ -111,31 +257,35 @@ export default function MembersGallery({ isPreview = false, title = "" }) {
 
         {/* === BAGIAN 2: PENGURUS SISWA === */}
         <div>
-          {/* JUDUL PEMBATAS SISWA (DINAMIS SESUAI HALAMAN) */}
+          {/* JUDUL PEMBATAS SISWA */}
           {teachers.length > 0 && (
-            <div className="flex items-center gap-4 mb-10 mt-10">
+            <div className="anim-divider-student flex items-center gap-4 mb-10 mt-10">
               <div className="h-px bg-gray-300 flex-1"></div>
               <h3 className="text-center text-xl font-bold text-gray-500 uppercase tracking-[0.2em]">
-                {studentSubtitle} {/* <--- INI SUDAH DIGANTI VARIABEL */}
+                {studentSubtitle}
               </h3>
               <div className="h-px bg-gray-300 flex-1"></div>
             </div>
           )}
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="student-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {students.map((member) => (
               <div
                 key={member.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group flex flex-col"
+                // Removed CSS hover/transition classes
+                className="student-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col cursor-pointer"
+                onMouseEnter={(e) => onHoverStudent(e, true)}
+                onMouseLeave={(e) => onHoverStudent(e, false)}
               >
                 {/* FOTO SISWA */}
                 <div className="relative aspect-[3/4] overflow-hidden bg-gray-200">
                   <img
                     src={member.image_url}
                     alt={member.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover" // Removed CSS transition classes
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60"></div>
+                  {/* Overlay gradient di-target via class untuk animasi opacity */}
+                  <div className="overlay-gradient absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60"></div>
                 </div>
 
                 {/* TEKS SISWA */}
@@ -153,12 +303,14 @@ export default function MembersGallery({ isPreview = false, title = "" }) {
           </div>
         </div>
 
-        {/* TOMBOL LIHAT SEMUA (Hanya di Homepage) */}
+        {/* TOMBOL LIHAT SEMUA */}
         {isPreview && (
           <div className="text-center mt-16">
             <Link
               to="/members"
-              className="inline-flex items-center justify-center px-8 py-3 bg-white border-2 border-orange-500 text-orange-600 font-bold rounded-full hover:bg-orange-500 hover:text-white transition-all shadow-sm hover:shadow-md"
+              className="anim-btn inline-flex items-center justify-center px-8 py-3 bg-white border-2 border-orange-500 text-orange-600 font-bold rounded-full shadow-sm" // Removed CSS hover classes
+              onMouseEnter={(e) => onHoverBtn(e, true)}
+              onMouseLeave={(e) => onHoverBtn(e, false)}
             >
               Lihat Semua Anggota
             </Link>
