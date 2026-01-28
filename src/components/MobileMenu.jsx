@@ -18,67 +18,81 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
   const menuRef = useRef(null);
   const timeline = useRef(null);
 
+  // === GSAP SETUP ===
   useEffect(() => {
-    // Setup GSAP Context
-    let ctx = gsap.context(() => {
-      // RESET STATE AWAL
+    const ctx = gsap.context(() => {
+      // Initial state
       gsap.set(menuRef.current, { xPercent: 100 });
       gsap.set(overlayRef.current, { autoAlpha: 0 });
 
-      // TIMELINE SETUP
+      gsap.set(".mobile-header", { opacity: 1, y: 0 });
+      gsap.set(".mobile-item", { opacity: 1, x: 0 });
+
       timeline.current = gsap.timeline({ paused: true });
 
-      // 1. Overlay (Background Gelap)
+      // Overlay
       timeline.current.to(overlayRef.current, {
         autoAlpha: 1,
         duration: 0.3,
         ease: "power2.out",
       });
 
-      // 2. Menu Panel (Wadah Utamanya)
+      // Menu panel
       timeline.current.to(
         menuRef.current,
         {
           xPercent: 0,
           duration: 0.5,
-          ease: "power4.out", // Power4 lebih dramatis ngeremnya (alus banget di akhir)
+          ease: "power3.out",
         },
-        "-=0.3", // Mulai barengan sama overlay
+        "-=0.2",
       );
 
-      // 3. Item Menu (Berderet Alus)
+      // Header
       timeline.current.fromTo(
-        ".mobile-anim",
+        ".mobile-header",
+        { y: -20, opacity: 0 },
         {
-          x: 80, // Mulai dari kanan agak jauh
-          opacity: 0,
+          y: 0,
+          opacity: 1,
+          duration: 0.4,
+          ease: "power2.out",
         },
+        "-=0.3",
+      );
+
+      // Menu items
+      timeline.current.fromTo(
+        ".mobile-item",
+        { x: 40, opacity: 0 },
         {
           x: 0,
           opacity: 1,
           duration: 0.4,
-          stagger: 0.1, // Jeda antar item 0.1 detik (ini yang bikin efek berderet)
-          ease: "power3.out", // Easing standar yang smooth, gak mantul
+          stagger: 0.06,
+          ease: "back.out(1.2)",
         },
-        "-=0.3", // Item mulai masuk pas panel menu belum sampe full (biar flow-nya nyambung)
+        "-=0.2",
       );
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
-  // Handle Play/Reverse logic
+  // === OPEN / CLOSE ===
   useEffect(() => {
-    if (timeline.current) {
-      if (isOpen) {
-        timeline.current.play();
-      } else {
-        timeline.current.timeScale(1.3).reverse(); // Pas nutup dicepetin dikit (1.5x) biar sat-set
-      }
+    if (!timeline.current) return;
+
+    if (isOpen) {
+      timeline.current.play();
+      document.body.style.overflow = "hidden";
+    } else {
+      timeline.current.timeScale(1.2).reverse();
+      document.body.style.overflow = "auto";
     }
   }, [isOpen]);
 
-  // Render Portal
+  // === RENDER ===
   return createPortal(
     <div
       ref={containerRef}
@@ -87,7 +101,7 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
       {/* Overlay */}
       <div
         ref={overlayRef}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto opacity-0 invisible"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
         onClick={onClose}
       />
 
@@ -97,7 +111,7 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
         className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-white shadow-2xl pointer-events-auto flex flex-col h-full will-change-transform"
       >
         {/* Header */}
-        <div className="mobile-anim flex items-center justify-between p-6 border-b border-gray-100">
+        <div className="mobile-header flex items-center justify-between p-6 border-b border-gray-100">
           <span className="text-xl font-bold text-gray-800">Menu</span>
           <button
             onClick={onClose}
@@ -107,14 +121,14 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
           </button>
         </div>
 
-        {/* Navigation List */}
+        {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <button
             onClick={() => {
               handleNavClick("top", "scroll");
               onClose();
             }}
-            className="mobile-anim w-full flex items-center gap-4 px-4 py-4 text-gray-600 font-semibold hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-all"
+            className="mobile-item w-full flex items-center gap-4 px-4 py-4 text-gray-600 font-semibold hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-all"
           >
             <Home size={22} /> Beranda
           </button>
@@ -130,7 +144,7 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
                 }
                 onClose();
               }}
-              className="mobile-anim w-full flex items-center gap-4 px-4 py-4 text-gray-600 font-semibold hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-all group"
+              className="mobile-item w-full flex items-center gap-4 px-4 py-4 text-gray-600 font-semibold hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-all group"
             >
               <span className="text-gray-500 group-hover:text-orange-600 transition-colors">
                 {item.icon}
@@ -145,8 +159,8 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
           ))}
         </nav>
 
-        {/* Footer Action */}
-        <div className="mobile-anim p-6 bg-gray-50 border-t border-gray-100 mt-auto">
+        {/* Footer */}
+        <div className="mobile-item p-6 bg-gray-50 border-t border-gray-100 mt-auto">
           <Link
             to={user ? "/admin/dashboard" : "/login"}
             onClick={onClose}
