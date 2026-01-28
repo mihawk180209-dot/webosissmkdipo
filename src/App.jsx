@@ -26,7 +26,9 @@ const ManageVisiMisi = lazy(() => import("./pages/admin/ManageVisiMisi"));
 const PageLoader = () => (
   <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
     <Loader2 className="animate-spin text-orange-600 w-12 h-12 mb-4" />
-    <p className="text-slate-500 font-medium animate-pulse">Memuat Data...</p>
+    <p className="text-slate-500 font-medium animate-pulse">
+      Memuat halaman...
+    </p>
   </div>
 );
 

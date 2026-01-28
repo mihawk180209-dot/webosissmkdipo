@@ -1,36 +1,61 @@
 @import "tailwindcss";
+
+@theme {
+  /* Mendaftarkan Inter sebagai font sans default */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Mendaftarkan Poppins sebagai font khusus heading */
+  --font-heading: "Poppins", sans-serif;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  width: auto;
-  overflow-x: hidden;
+@layer base {
+  body {
+    width: auto;
+    overflow-x: hidden;
+    /* Menerapkan Inter ke body */
+    font-family: var(--font-sans);
+  }
+
+  /* Menerapkan Poppins otomatis ke semua tag heading */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    font-weight: 700; /* Membuat judul lebih tegas */
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+  }
 }
 
-#root {
-  width: 100%;
-  min-height: 100vh;
-}
+/* --- Tetap Pertahankan Animasi Kamu --- */
 
 @keyframes imageReveal {
   0% {
     opacity: 0;
-    transform: scale(1.05); /* Mulai agak nge-zoom */
-    filter: blur(5px); /* Sedikit blur di awal */
+    transform: scale(1.05);
+    filter: blur(5px);
   }
   100% {
     opacity: 1;
-    transform: scale(1); /* Kembali ke ukuran normal */
+    transform: scale(1);
     filter: blur(0);
   }
 }
 
-/* Teks muncul dari bawah ke atas */
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(30px); /* Mulai 30px di bawah posisi asli */
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -38,22 +63,17 @@ body {
   }
 }
 
-/* Sticky button muncul dari luar layar bawah */
 @keyframes slideUpSticky {
   from {
-    transform: translateY(100%); /* Sembunyi di bawah layar */
+    transform: translateY(100%);
   }
   to {
     transform: translateY(0);
   }
 }
 
-/* 2. Utility Classes untuk dipakai di React */
-
-/* Base class biar elemen hidden dulu sebelum animasi mulai */
 .prepare-anim {
   opacity: 0;
-  /* 'forwards' artinya setelah animasi selesai, stay di kondisi terakhir (gak balik hidden) */
   animation-fill-mode: forwards;
 }
 
@@ -65,14 +85,11 @@ body {
   animation: fadeUp 0.8s ease-out;
 }
 
-/* Class khusus buat sticky footer */
 .anim-sticky-footer {
-  /* Delay 1.5 detik, biar konten kebaca dulu baru tombol muncul */
   animation: slideUpSticky 0.8s ease-out 1.5s forwards;
-  transform: translateY(100%); /* Posisi awal ngumpet */
+  transform: translateY(100%);
 }
 
-/* 3. Delays (PENTING BIAR GAK MUNCUL BARENGAN) */
 .delay-200 {
   animation-delay: 200ms;
 }
