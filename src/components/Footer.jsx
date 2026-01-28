@@ -46,7 +46,7 @@ export default function Footer() {
                   OSIS SMK DIPO 1
                 </h3>
                 <span className="text-xs text-gray-500 tracking-widest uppercase">
-                  Jakarta Pusat
+                  Jakarta Timur
                 </span>
               </div>
             </div>
