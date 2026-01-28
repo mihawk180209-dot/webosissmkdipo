@@ -76,6 +76,12 @@ export default function Navbar() {
       icon: <Target size={20} />,
     },
     {
+      name: "Anggota",
+      target: "anggota",
+      type: "scroll",
+      icon: <Users size={20} />,
+    },
+    {
       name: "Program",
       target: "program",
       type: "scroll",
@@ -86,12 +92,6 @@ export default function Navbar() {
       target: "kegiatan",
       type: "scroll",
       icon: <CalendarDays size={20} />,
-    },
-    {
-      name: "Anggota",
-      target: "anggota",
-      type: "scroll",
-      icon: <Users size={20} />,
     },
     {
       name: "KAD",
