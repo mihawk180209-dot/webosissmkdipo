@@ -21,68 +21,82 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
   useEffect(() => {
     // Setup GSAP Context
     let ctx = gsap.context(() => {
+      // RESET STATE AWAL
+      gsap.set(menuRef.current, { xPercent: 100 });
+      gsap.set(overlayRef.current, { autoAlpha: 0 });
+
+      // TIMELINE SETUP
       timeline.current = gsap.timeline({ paused: true });
 
-      // 1. Animasi Overlay
+      // 1. Overlay (Background Gelap)
       timeline.current.to(overlayRef.current, {
         autoAlpha: 1,
         duration: 0.3,
+        ease: "power2.out",
       });
 
-      // 2. Animasi Menu Panel (Slide In)
+      // 2. Menu Panel (Wadah Utamanya)
       timeline.current.to(
         menuRef.current,
-        { x: "0%", duration: 0.5, ease: "power3.out" },
-        "-=0.2",
+        {
+          xPercent: 0,
+          duration: 0.5,
+          ease: "power4.out", // Power4 lebih dramatis ngeremnya (alus banget di akhir)
+        },
+        "-=0.3", // Mulai barengan sama overlay
       );
 
-      // 3. Animasi Item dalam Menu (Stagger)
-      // Menggunakan .fromTo agar state awal & akhir selalu pasti (anti-bug invisible)
+      // 3. Item Menu (Berderet Alus)
       timeline.current.fromTo(
         ".mobile-anim",
-        { x: 30, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.4, stagger: 0.08 },
-        "-=0.3",
+        {
+          x: 80, // Mulai dari kanan agak jauh
+          opacity: 0,
+        },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.1, // Jeda antar item 0.1 detik (ini yang bikin efek berderet)
+          ease: "power3.out", // Easing standar yang smooth, gak mantul
+        },
+        "-=0.3", // Item mulai masuk pas panel menu belum sampe full (biar flow-nya nyambung)
       );
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
-  // Handle Play/Reverse
+  // Handle Play/Reverse logic
   useEffect(() => {
     if (timeline.current) {
       if (isOpen) {
         timeline.current.play();
       } else {
-        timeline.current.reverse();
+        timeline.current.timeScale(1.3).reverse(); // Pas nutup dicepetin dikit (1.5x) biar sat-set
       }
     }
   }, [isOpen]);
 
-  // Render ke Body menggunakan Portal
+  // Render Portal
   return createPortal(
     <div
       ref={containerRef}
-      // PERBAIKAN 1: Gunakan fixed inset-0 agar container selalu cover layar
-      // pointer-events-none agar tidak nge-block klik jika ada area transparan glitch
       className="fixed inset-0 z-[9999] pointer-events-none"
     >
-      {/* Overlay Background */}
+      {/* Overlay */}
       <div
         ref={overlayRef}
-        // PERBAIKAN 2: pointer-events-auto agar bisa diklik untuk close
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto invisible opacity-0"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto opacity-0 invisible"
         onClick={onClose}
       />
 
-      {/* Panel Menu */}
+      {/* Menu Panel */}
       <div
         ref={menuRef}
-        // PERBAIKAN 3: pointer-events-auto agar menu bisa diinteraksi
-        className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-white shadow-2xl pointer-events-auto translate-x-full flex flex-col h-full"
+        className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-white shadow-2xl pointer-events-auto flex flex-col h-full will-change-transform"
       >
-        {/* Header Menu */}
+        {/* Header */}
         <div className="mobile-anim flex items-center justify-between p-6 border-b border-gray-100">
           <span className="text-xl font-bold text-gray-800">Menu</span>
           <button
@@ -93,7 +107,7 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
           </button>
         </div>
 
-        {/* List Link */}
+        {/* Navigation List */}
         <nav className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <button
             onClick={() => {
@@ -116,10 +130,9 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
                 }
                 onClose();
               }}
-              className="mobile-anim w-full flex items-center gap-4 px-4 py-4 text-gray-600 font-semibold hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-all"
+              className="mobile-anim w-full flex items-center gap-4 px-4 py-4 text-gray-600 font-semibold hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-all group"
             >
-              {/* Icon dirender langsung dari props */}
-              <span className="text-gray-500 group-hover:text-orange-600">
+              <span className="text-gray-500 group-hover:text-orange-600 transition-colors">
                 {item.icon}
               </span>
               {item.name}
@@ -132,7 +145,7 @@ const MobileMenu = ({ isOpen, onClose, user, navLinks, handleNavClick }) => {
           ))}
         </nav>
 
-        {/* Footer / Login Button */}
+        {/* Footer Action */}
         <div className="mobile-anim p-6 bg-gray-50 border-t border-gray-100 mt-auto">
           <Link
             to={user ? "/admin/dashboard" : "/login"}
