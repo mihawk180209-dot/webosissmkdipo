@@ -9,6 +9,7 @@ import {
   X,
   LayoutDashboard,
   Target,
+  Calendar,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -43,6 +44,11 @@ export default function AdminLayout() {
       name: "Edit Visi Misi",
       path: "/admin/visi-misi",
       icon: <Target size={20} />,
+    },
+    {
+      name: "Tambah Kegiatan",
+      path: "/admin/kegiatan",
+      icon: <Calendar size={20} />,
     },
   ];
 

@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -9,6 +10,7 @@ import {
   Globe,
   LogIn,
   LayoutDashboard,
+  CalendarDays,
 } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import MobileMenu from "./MobileMenu";
@@ -18,6 +20,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState(null);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -29,27 +32,67 @@ export default function Navbar() {
       setUser(session?.user ?? null);
     };
     getSession();
+
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleNavClick = (id) => {
-    if (location.pathname !== "/") {
-      navigate("/");
-      setTimeout(
-        () =>
-          document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }),
-        100,
-      );
-    } else document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  // LOGIC NAVIGASI
+  const handleNavClick = (target, type = "scroll") => {
+    if (type === "link") {
+      navigate(target);
+    } else {
+      const scrollToElement = () => {
+        if (target === "top") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          document
+            .getElementById(target)
+            ?.scrollIntoView({ behavior: "smooth" });
+        }
+      };
+
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(scrollToElement, 100);
+      } else {
+        scrollToElement();
+      }
+    }
   };
 
   const navLinks = [
-    { name: "Tentang", id: "tentang", icon: <Info size={20} /> },
-    { name: "Visi Misi", id: "visi-misi", icon: <Target size={20} /> },
-    { name: "Anggota", id: "anggota", icon: <Users size={20} /> },
-    { name: "Program", id: "program", icon: <BookOpen size={20} /> },
+    {
+      name: "Tentang",
+      target: "tentang",
+      type: "scroll",
+      icon: <Info size={20} />,
+    },
+    {
+      name: "Visi Misi",
+      target: "visi-misi",
+      type: "scroll",
+      icon: <Target size={20} />,
+    },
+    {
+      name: "Program",
+      target: "program",
+      type: "scroll",
+      icon: <BookOpen size={20} />,
+    },
+    {
+      name: "Kegiatan",
+      target: "kegiatan",
+      type: "scroll",
+      icon: <CalendarDays size={20} />,
+    },
+    {
+      name: "Anggota",
+      target: "anggota",
+      type: "scroll",
+      icon: <Users size={20} />,
+    },
     {
       name: "KAD",
       url: "https://tally.so/r/3q06Gd",
@@ -63,7 +106,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed w-full z-50 transition-all duration-300 ${
+        className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-white/90 backdrop-blur-md shadow-md py-3 border-b border-orange-100"
             : "bg-transparent py-5"
@@ -71,7 +114,7 @@ export default function Navbar() {
       >
         <div className="container mx-auto px-4 flex justify-between items-center">
           {/* LOGO */}
-          <Link to="/" className="flex items-center gap-3 group relative z-50">
+          <Link to="/" className="flex items-center gap-3 group">
             <img
               src={logoOsis}
               alt="Logo"
@@ -96,14 +139,14 @@ export default function Navbar() {
           </Link>
 
           {/* DESKTOP MENU */}
-          <div className="hidden lg:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-6">
             {navLinks.map((item) => (
               <button
                 key={item.name}
                 onClick={() =>
                   item.isExternal
                     ? window.open(item.url)
-                    : handleNavClick(item.id)
+                    : handleNavClick(item.target, item.type)
                 }
                 className={`text-sm font-semibold relative group py-1 transition-colors ${
                   isTransparent
@@ -112,7 +155,6 @@ export default function Navbar() {
                 }`}
               >
                 {item.name}
-                {/* Underline Effect */}
                 <span
                   className={`absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
                     isTransparent ? "bg-white" : "bg-orange-600"
@@ -121,8 +163,11 @@ export default function Navbar() {
               </button>
             ))}
 
-            {/* Admin/Dashboard Button */}
-            <div className="flex items-center ml-4 pl-4 border-l border-gray-200">
+            <div
+              className={`flex items-center ml-2 pl-4 border-l ${
+                isTransparent ? "border-white/20" : "border-gray-200"
+              }`}
+            >
               {user ? (
                 <Link
                   to="/admin/dashboard"
@@ -147,10 +192,10 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* MOBILE TOGGLE */}
+          {/* MOBILE TOGGLE BUTTON */}
           <button
             onClick={() => setIsOpen(true)}
-            className={`lg:hidden focus:outline-none transition-transform active:scale-90 ${
+            className={`lg:hidden p-2 rounded-lg focus:outline-none transition-transform active:scale-90 ${
               isTransparent ? "text-white" : "text-gray-800"
             }`}
           >
@@ -159,6 +204,7 @@ export default function Navbar() {
         </div>
       </nav>
 
+      {/* RENDER MOBILE MENU */}
       <MobileMenu
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}

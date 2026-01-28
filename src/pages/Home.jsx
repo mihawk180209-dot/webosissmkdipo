@@ -5,50 +5,35 @@ import Hero from "../components/Hero";
 import MembersGallery from "../components/MembersGallery";
 import ProgramKerja from "../components/ProgramKerja";
 import Footer from "../components/Footer";
-// Hapus import framer-motion
-// import { motion } from "framer-motion";
-
-// Import GSAP
+import Kegiatan from "../components/Kegiatan"; // Pastikan file ini ada di components
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Target, CheckCircle, Users, Sparkles, Loader2 } from "lucide-react";
 import dipo from "../assets/diponibos.jpg";
 
-// Register Plugin
 gsap.registerPlugin(ScrollTrigger);
 
-// === 1. COMPONENT ABOUT ===
+// === COMPONENT ABOUT ===
 const AboutSection = () => {
   const comp = useRef(null);
 
   useLayoutEffect(() => {
     let ctx = gsap.context(() => {
-      // Animasi Text (Kiri)
       gsap.from(".about-content", {
-        scrollTrigger: {
-          trigger: ".about-content",
-          start: "top 80%", // Mulai saat elemen 80% dari atas viewport
-        },
+        scrollTrigger: { trigger: ".about-content", start: "top 80%" },
         x: -50,
         opacity: 0,
         duration: 1,
         ease: "power3.out",
       });
-
-      // Animasi Gambar (Kanan)
       gsap.from(".about-image", {
-        scrollTrigger: {
-          trigger: ".about-image",
-          start: "top 80%",
-        },
+        scrollTrigger: { trigger: ".about-image", start: "top 80%" },
         scale: 0.8,
         opacity: 0,
         duration: 1,
-        ease: "back.out(1.7)", // Efek membal sedikit agar lebih hidup
+        ease: "back.out(1.7)",
         delay: 0.2,
       });
-
-      // Animasi Background Blob (Parallax effect optional)
       gsap.to(".bg-blob-1", {
         y: 50,
         duration: 3,
@@ -57,8 +42,7 @@ const AboutSection = () => {
         ease: "sine.inOut",
       });
     }, comp);
-
-    return () => ctx.revert(); // Cleanup
+    return () => ctx.revert();
   }, []);
 
   return (
@@ -69,10 +53,8 @@ const AboutSection = () => {
     >
       <div className="bg-blob-1 absolute top-0 right-0 w-64 h-64 bg-orange-100 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-yellow-50 rounded-full blur-3xl opacity-50 translate-y-1/3 -translate-x-1/4"></div>
-
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Bagian Kiri: Text */}
           <div className="about-content">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="text-orange-500" size={24} />
@@ -86,15 +68,11 @@ const AboutSection = () => {
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed mb-6">
               OSIS SMK Diponegoro 1 Jakarta hadir bukan hanya sebagai
-              organisasi, tapi sebagai rumah bagi ide-ide brilian. Kami
-              berkomitmen menjembatani aspirasi siswa dengan pihak sekolah,
-              serta mengembangkan potensi akademik maupun non-akademik.
+              organisasi, tapi sebagai rumah bagi ide-ide brilian.
             </p>
             <div className="flex gap-8">
               <div>
-                <h4 className="text-3xl font-bold text-gray-800 counter-member">
-                  20+
-                </h4>
+                <h4 className="text-3xl font-bold text-gray-800">20+</h4>
                 <p className="text-sm text-gray-500">Anggota Aktif</p>
               </div>
               <div>
@@ -103,8 +81,6 @@ const AboutSection = () => {
               </div>
             </div>
           </div>
-
-          {/* Bagian Kanan: Image */}
           <div className="about-image relative">
             <div className="absolute inset-0 bg-orange-500 rounded-3xl rotate-3 opacity-20 transform translate-x-2 translate-y-2"></div>
             <img
@@ -119,70 +95,56 @@ const AboutSection = () => {
   );
 };
 
-// === 2. COMPONENT VISI MISI (DINAMIS) ===
+// === COMPONENT VISI MISI ===
 const VisiMisiSection = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const comp = useRef(null); // Ref untuk GSAP Context
+  const comp = useRef(null);
 
-  // Ambil data dari Supabase saat komponen dimuat
   useEffect(() => {
     const fetchData = async () => {
-      const { data: profileData } = await supabase
+      const { data } = await supabase
         .from("school_profile")
         .select("*")
-        .eq("id", 1) // Ambil baris pertama
+        .eq("id", 1)
         .single();
-
-      if (profileData) setData(profileData);
+      if (data) setData(data);
       setLoading(false);
     };
-
     fetchData();
   }, []);
 
-  // Jalankan animasi HANYA setelah loading selesai dan komponen ter-render
   useLayoutEffect(() => {
-    if (loading) return; // Jangan jalankan animasi jika masih loading
-
+    if (loading) return;
     let ctx = gsap.context(() => {
-      // Judul Visi Misi
       gsap.from(".vm-title", {
         scrollTrigger: { trigger: ".vm-title", start: "top 85%" },
         y: 30,
         opacity: 0,
         duration: 0.8,
-        ease: "power2.out",
       });
-
-      // Card Animasi (Staggered / Berurutan)
       gsap.from(".vm-card", {
         scrollTrigger: { trigger: ".vm-grid", start: "top 80%" },
         y: 50,
         opacity: 0,
         duration: 0.8,
-        stagger: 0.2, // Jeda 0.2 detik antar kartu
-        ease: "power3.out",
+        stagger: 0.2,
       });
     }, comp);
-
     return () => ctx.revert();
-  }, [loading]); // Dependency array: jalankan ulang saat 'loading' berubah
+  }, [loading]);
 
-  // Kalau masih loading, tampilkan spinner
-  if (loading) {
+  if (loading)
     return (
-      <div className="py-24 bg-gray-900 flex justify-center items-center">
+      <div className="py-24 bg-gray-900 flex justify-center">
         <Loader2 className="text-orange-500 animate-spin" size={40} />
       </div>
     );
-  }
 
-  // Kalau data kosong (belum diisi di admin), pakai default
-  const vision = data?.vision || "Visi belum diisi oleh admin.";
+  const vision = data?.vision || "Visi belum diisi.";
   const missionList = data?.mission
-    ? data.mission.split("\n").filter((item) => item.trim() !== "")
-    : ["Misi belum diisi oleh admin."];
+    ? data.mission.split("\n").filter((i) => i.trim() !== "")
+    : ["Misi belum diisi."];
 
   return (
     <section
@@ -191,17 +153,14 @@ const VisiMisiSection = () => {
       className="py-24 bg-gradient-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden"
     >
       <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-
       <div className="container mx-auto px-4 relative z-10">
         <div className="vm-title text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Visi & Misi</h2>
           <div className="w-20 h-1 bg-orange-500 mx-auto rounded-full"></div>
         </div>
-
         <div className="vm-grid grid md:grid-cols-2 gap-8">
-          {/* Card Visi */}
           <div className="vm-card bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:bg-white/10 transition-colors group">
-            <div className="w-14 h-14 bg-orange-500/20 text-orange-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="w-14 h-14 bg-orange-500/20 text-orange-400 rounded-2xl flex items-center justify-center mb-6">
               <Target size={32} />
             </div>
             <h3 className="text-2xl font-bold mb-4 text-orange-400">
@@ -211,10 +170,8 @@ const VisiMisiSection = () => {
               "{vision}"
             </p>
           </div>
-
-          {/* Card Misi */}
           <div className="vm-card bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:bg-white/10 transition-colors group">
-            <div className="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-6">
               <Users size={32} />
             </div>
             <h3 className="text-2xl font-bold mb-6 text-blue-400">Misi Kami</h3>
@@ -236,16 +193,20 @@ const VisiMisiSection = () => {
   );
 };
 
+// === HOME UTAMA ===
 export default function Home() {
   return (
     <div className="font-sans overflow-x-hidden">
       <Navbar />
       <Hero />
       <AboutSection />
-      {/* Panggil Section Visi Misi yang sudah dinamis */}
       <VisiMisiSection />
       <MembersGallery isPreview={true} title="Pengurus Inti" />
       <ProgramKerja />
+
+      {/* SECTION KEGIATAN (Di Bawah Program Kerja) */}
+      <Kegiatan />
+
       <Footer />
     </div>
   );
